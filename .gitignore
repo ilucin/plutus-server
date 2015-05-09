@@ -1,0 +1,11 @@
+node_modules
+.sass-cache
+.tmp
+.grunt
+.DS_Store
+data
+npm-debug.log
+dump.rdb
+tmp/*
+report/*
+public/components
