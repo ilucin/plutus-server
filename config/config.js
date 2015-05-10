@@ -36,6 +36,7 @@ var config = {
 
 var exportedConfig = _.defaults(config[env], {
   root: rootPath,
+  maxTransactionAmount: 100000,
   links: {
     websiteUrl: 'http://www.plutus.io'
   }

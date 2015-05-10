@@ -6,6 +6,7 @@ var TransactionModel = require('../../models/transaction');
 var UserModel = require('../../models/user');
 var safeSave = require('../../utils/safe-save');
 var response = require('../../utils/response');
+var money = require('../../utils/money');
 var Msg = response.Messages;
 var handler = response.handler;
 
@@ -29,7 +30,7 @@ var AccountsController = BaseApiController.extend({
 
   remove: function(req, res) {},
 
-  create: function(req, res, data) {
+  create: function(req, res, userId, data) {
     var account = new AccountModel(data);
     account.user = req.user;
 
@@ -50,26 +51,33 @@ var AccountsController = BaseApiController.extend({
   },
 
   addCorrection: function(req, res, userId, accountId, data) {
-    var validationError = TransactionModel.validateAmount(data.amount);
+    var balance = money.parse(data.balance);
+    var validationError = money.validate(balance);
     if (validationError) {
       return response.error(res, validationError, response.HttpStatus.BAD_REQUEST);
     }
 
-    var amount = parseFloat(data.amount, 10);
+    var diff = balance - req.account.balance;
+
+    if (Math.abs(diff) < 1) {
+      return response.error(res, 'Account balance hasn\'t changed');
+    }
 
     var transaction = new TransactionModel({
-      amount: amount
+      amount: diff
     });
     transaction.user = req.user;
     transaction.account = req.account;
 
-    req.account.updateBalance(amount);
+    req.account.balance = balance;
 
     safeSave([transaction, req.account], handler(res, function() {
-      res.send({
-        account: req.account,
-        transaction: transaction
-      });
+      TransactionModel.findById(transaction._id).lean().select('-__v -updatedAt').exec(handler(res, function(t) {
+        res.send({
+          account: req.account,
+          transaction: t
+        });
+      }));
     }));
   },
 
@@ -93,7 +101,7 @@ var AccountsController = BaseApiController.extend({
     getAccount: function(req, res, next) {
       var accountId = req.param('accountId');
       AccountModel.findById(accountId)
-        .select('-__v')
+        .select('-__v -user -createdAt -updatedAt')
         .exec(handler(res, function(account) {
           if (!account || !!account.isDeleted) {
             response.send404(res, Msg.NO_BOARD);
