@@ -1,6 +1,5 @@
 'use strict';
 
-var _ = require('lodash-node');
 var path = require('path');
 var rootPath = path.normalize(__dirname + '/..');
 var env = process.env.NODE_ENV || 'development';

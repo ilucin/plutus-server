@@ -4,6 +4,7 @@ var Mongoose = require('mongoose');
 var createSchema = require('../utils/schema');
 
 var transactionSchema = createSchema('Transaction', {
+  description: String,
   amount: {
     type: Number,
     required: true

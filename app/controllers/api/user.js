@@ -57,7 +57,7 @@ var UserController = BaseApiController.extend({
 
   update: function(req, res, userId, data) {
     UserModel.findById(userId, handler(res, function(user) {
-      if (!user || !!user.isDeleted) {
+      if (!user) {
         return response.send404(res, Msg.NO_USER);
       }
       user.set(UserModel.filterUserData(data));
@@ -67,19 +67,22 @@ var UserController = BaseApiController.extend({
     }));
   },
 
+  updateCategories: function(req, res, userId, data) {
+    if (!data.categories) {
+      return response.error(res, 'Missing categories data', response.HttpStatus.BAD_REQUEST);
+    } else {
+      req.user.categories = data.categories;
+      req.user.save(handler(res, function() {
+        response.send(res, req.user);
+      }));
+    }
+  },
+
   remove: function(req, res, userId) {
-    UserModel.findById(userId).exec(handler(res, function(user) {
-      if (!user || !!user.isDeleted) {
-        return response.send404(res, Msg.NO_USER);
-      } else {
-        user.softDelete(function(err) {
-          if (err) {
-            response.error(err);
-          } else {
-            response.success();
-          }
-        });
-      }
+    UserModel.remove({
+      _id: userId
+    }, handler(res, function() {
+      response.deleteSuccess(res);
     }));
   },
 

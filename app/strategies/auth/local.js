@@ -14,8 +14,6 @@ var localAuthStrategy = new LocalStrategy(function(username, password, done) {
       error(done, err);
     } else if (!user) {
       error(done, null, Msg.AUTH_INVALID_USERNAME);
-    } else if (!!user.isDeleted) {
-      error(done, null, Msg.AUTH_NO_USER);
     } else if (!user.validatePassword(password)) {
       error(done, null, Msg.AUTH_INVALID_PASSWORD);
     } else {

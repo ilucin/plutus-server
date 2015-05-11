@@ -16,6 +16,7 @@ module.exports = {
       'put': [userController, 'update'],
       'delete': [userController, 'remove']
     },
+    'post /users/:userId/categories': [userController, 'updateCategories'],
     'post /users/:userId/email-confirmation': [userController, 'emailConfirmation'],
     'post /users/resend-email-confirmation': [userController, 'resendEmailConfirmation'],
     'get /users/:userId/accounts': [userController, 'accounts'],
@@ -30,10 +31,12 @@ module.exports = {
       'delete': [accountsController, 'remove']
     },
     'post /users/:userId/accounts/:accountId/correction': [accountsController, 'addCorrection'],
-    'get /users/:userId/accounts/:accountId/transactions': [accountsController, 'transactions'],
+    '/users/:userId/accounts/:accountId/transactions': {
+      'get': [accountsController, 'transactions'],
+      'post': [accountsController, 'createTransaction']
+    },
     '/users/:userId/accounts/:accountId/transaction/:transactionId': {
       'get': [accountsController, 'getTransaction'],
-      'put': [accountsController, 'updateTransaction'],
       'delete': [accountsController, 'removeTransaction']
     },
 

@@ -12,7 +12,10 @@ var Messages = {
   USER_TOO_WEAK: 'User don\'t have a rights for this action',
   USER_DELETED_SUCCESS: 'User has been removed',
   NO_USER: 'User doesn\'t exist',
-  USER_NOT_AUTHENTICATED: 'User is not authenticated'
+  USER_NOT_AUTHENTICATED: 'User is not authenticated',
+
+  NO_ACCOUNT: 'Account doesn\'t exist',
+  NO_TRANSACTION: 'Transaction doesn\'t exist',
 };
 
 var HttpStatus = {

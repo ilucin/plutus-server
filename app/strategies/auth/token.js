@@ -21,8 +21,6 @@ var tokenAuthStrategy = new TokenStrategy(strategyOptions, function(username, to
       error(done, err);
     } else if (!user) {
       error(done, null, Msg.AUTH_INVALID_USERNAME);
-    } else if (!!user.isDeleted) {
-      error(done, null, Msg.AUTH_NO_USER);
     } else {
       user.setLastTokenAction();
       user.save(function(err) {
