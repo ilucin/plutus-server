@@ -22,8 +22,8 @@ function accountById(res, accountId, select) {
 var AccountsController = BaseApiController.extend({
   beforeAction: {
     'authenticate': '*',
-    'getAccount': 'addCorrection, transactions, getTransaction, remove, update, details, createTransaction',
-    'getTransaction': 'getTransaction'
+    'getAccount': 'addCorrection, transactions, getTransaction, remove, update, details, createTransaction, updateTransaction',
+    'getTransaction': 'getTransaction, updateTransaction'
   },
 
   remove: function(req, res, userId, accountId) {
@@ -111,6 +111,48 @@ var AccountsController = BaseApiController.extend({
     safeSave([req.account, transaction], handler(res, function() {
       response.send(res, {
         account: req.account,
+        transaction: transaction
+      });
+    }));
+  },
+
+  updateTransaction: function(req, res, userId, accountId, transactionId, data) {
+    if (!data || !data.type || (data.type !== 'income' && data.type !== 'expense')) {
+      return response.error(res, 'Invalid transaction', response.HttpStatus.BAD_REQUEST);
+    }
+
+    data.amount = money.parse(data.amount);
+    delete data.account;
+    delete data.user;
+
+    var transaction = req.transaction;
+    var account = req.account;
+
+    if (!transaction || !account) {
+      return response.error(res, 'Invalid data');
+    }
+
+    var diffAmount = 0;
+    if (data.type === 'income') {
+      if (transaction.type === 'income') {
+        diffAmount = data.amount - transaction.amount;
+      } else {
+        diffAmount = data.amount + transaction.amount;
+      }
+    } else {
+      if (transaction.type === 'income') {
+        diffAmount = -(data.amount + transaction.amount);
+      } else {
+        diffAmount = -(data.amount - transaction.amount);
+      }
+    }
+
+    transaction.set(data);
+    account.set('balance', account.balance + diffAmount);
+
+    safeSave([account, transaction], handler(res, function() {
+      response.send(res, {
+        account: account,
         transaction: transaction
       });
     }));

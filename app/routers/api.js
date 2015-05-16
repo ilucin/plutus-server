@@ -37,7 +37,8 @@ module.exports = {
     },
     '/users/:userId/accounts/:accountId/transaction/:transactionId': {
       'get': [accountsController, 'getTransaction'],
-      'delete': [accountsController, 'removeTransaction']
+      'delete': [accountsController, 'removeTransaction'],
+      'put': [accountsController, 'updateTransaction']
     },
 
     // Admin
