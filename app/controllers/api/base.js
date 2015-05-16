@@ -37,6 +37,10 @@ var BaseApiController = BaseController.extend({
           next();
         }
       })(req, res, next);
+    },
+
+    delay: function(req, res, next) {
+      setTimeout(next, 3000);
     }
   }, BaseController.prototype.beforeFilters)
 });
